@@ -7,37 +7,46 @@ from sql_queries import *
 
 def process_song_file(cur, filepath):
     # open song file
-    df = 
+    df = pd.read_json(filepath, lines=True)
 
     # insert song record
-    song_data = 
+    song_data =  df[
+        ["song_id", "title", "artist_id", "year", "duration"]
+    ].values.tolist()[0]
     cur.execute(song_table_insert, song_data)
     
     # insert artist record
-    artist_data = 
+    artist_data =  df[
+        ["artist_id", "artist_name", "artist_location", "artist_latitude", "artist_longitude"]
+    ].values.tolist()[0]
     cur.execute(artist_table_insert, artist_data)
 
 
 def process_log_file(cur, filepath):
     # open log file
-    df = 
+    df = pd.read_json(filepath, lines=True)
+    df["start_time"] = pd.to_datetime(df["ts"], unit="ms")
 
     # filter by NextSong action
-    df = 
+    df = df[df["page"] == "NextSong"]
 
     # convert timestamp column to datetime
-    t = 
+    t = df["start_time"].drop_duplicates()
     
     # insert time data records
-    time_data = 
-    column_labels = 
-    time_df = 
+    column_labels = ["hour", "day", "weekofyear", "month", "year", "dayofweek"]
+    time_data = (getattr(t.dt, column).rename(column) for column in column_labels)
+    time_df = t.to_frame("start_time").join(pd.concat(time_data, axis=1))
 
     for i, row in time_df.iterrows():
         cur.execute(time_table_insert, list(row))
 
     # load user table
-    user_df = 
+    user_df = df.drop_duplicates(
+        ["userId", "firstName", "lastName", "gender", "level"]
+    )[
+        ["userId", "firstName", "lastName", "gender", "level"]
+    ]
 
     # insert user records
     for i, row in user_df.iterrows():
@@ -56,7 +65,7 @@ def process_log_file(cur, filepath):
             songid, artistid = None, None
 
         # insert songplay record
-        songplay_data = 
+        songplay_data = (row.start_time, row.userId, row.level, songid, artistid, row.sessionId, row.location, row.userAgent)
         cur.execute(songplay_table_insert, songplay_data)
 
 

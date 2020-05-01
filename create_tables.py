@@ -59,11 +59,11 @@ def main():
     - Finally, closes the connection. 
     """
     cur, conn = create_database()
-    
-    drop_tables(cur, conn)
-    create_tables(cur, conn)
-
-    conn.close()
+    try:
+        drop_tables(cur, conn)
+        create_tables(cur, conn)        
+    finally:
+        conn.close()
 
 
 if __name__ == "__main__":
