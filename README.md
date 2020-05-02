@@ -20,7 +20,7 @@ The database uses the star schema with the Fact table songplays and Dimension ta
 #### Database schema diagram
 ![database schema](p1-dend.png "Database schema diagram")
 
-The ETL pipeline populates all Dimension tables first so any reference data required by the Fact table will be ready for querying when its population begins. When populating Dimension tables it makes use of the Pandas dataframe feature to drop duplicates from the table. The pipeline reads from the song_data data source to obtain data about the songs and artists dimension tables. And the log_data data source to obtain data for the songplays fact table referencing the artist and songs dimension tables to obtain the artist and song ids. The same log data is also used time and users dimension tables
+The ETL pipeline populates all Dimension tables first so any reference data required by the Fact table will be ready for querying when its population begins. When populating the Time Dimension tables it makes use of the Pandas dataframe feature to drop duplicates from the table, since there is no requirement to have duplicated time entries. The pipeline reads from the song_data data source to obtain data about the songs and artists dimension tables. And the log_data data source to obtain data for the songplays fact table referencing the artist and songs dimension tables to obtain the artist and song ids. The same log data is also used time and users dimension tables
 
 ### Provide example queries and results for song play analysis.
 

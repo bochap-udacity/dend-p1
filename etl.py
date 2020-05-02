@@ -6,6 +6,9 @@ from sql_queries import *
 
 
 def process_song_file(cur, filepath):
+    """
+        Takes a filepath to read the song file and populate the song and artist record dimension tables
+    """
     # open song file
     df = pd.read_json(filepath, lines=True)
 
@@ -23,6 +26,9 @@ def process_song_file(cur, filepath):
 
 
 def process_log_file(cur, filepath):
+    """
+        Takes a filepath to read the log file and populate the songplay fact table, and dimension tables time and users
+    """
     # open log file
     df = pd.read_json(filepath, lines=True)
     df["start_time"] = pd.to_datetime(df["ts"], unit="ms")
@@ -42,9 +48,7 @@ def process_log_file(cur, filepath):
         cur.execute(time_table_insert, list(row))
 
     # load user table
-    user_df = df.drop_duplicates(
-        ["userId", "firstName", "lastName", "gender", "level"]
-    )[
+    user_df = df[
         ["userId", "firstName", "lastName", "gender", "level"]
     ]
 
@@ -70,6 +74,10 @@ def process_log_file(cur, filepath):
 
 
 def process_data(cur, conn, filepath, func):
+    """
+        Takes a root file paths and processes all files to be stored in the SQL database using the handler funct
+    """
+    
     # get all files matching extension from directory
     all_files = []
     for root, dirs, files in os.walk(filepath):
@@ -89,6 +97,11 @@ def process_data(cur, conn, filepath, func):
 
 
 def main():
+    """
+        Main function that is called when ran as a script. It constructs the SQL cursors and calls the file processing 
+        functions.
+    """
+    
     conn = psycopg2.connect("host=127.0.0.1 dbname=sparkifydb user=student password=student")
     cur = conn.cursor()
 
